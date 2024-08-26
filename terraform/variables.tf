@@ -36,6 +36,6 @@ variable "database_credentials" {
     username = "postgres"
     password = "postgres"
     port     = 5432
-    name     = "api-food"
+    name     = "apiFood"
   }
 }
