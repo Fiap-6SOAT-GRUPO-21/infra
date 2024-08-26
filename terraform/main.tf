@@ -14,7 +14,7 @@ module "rds" {
   region             = var.region
   availability_zone  = var.availability_zones[0]
   vpc_id             = module.vpc_for_eks.vpc_id
-  database_subnetids = module.vpc_for_eks.private_subnet_ids
+  database_subnetids = module.vpc_for_eks.public_subnet_ids
   database_username  = var.database_credentials.username
   database_password  = var.database_credentials.password
   database_port      = var.database_credentials.port
