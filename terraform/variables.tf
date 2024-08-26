@@ -4,25 +4,6 @@ variable "region" {
   type        = string
 }
 
-variable "access_key" {
-  description = "AWS Access Key"
-  type        = string
-  default     = ""
-}
-
-variable "secret_key" {
-  description = "AWS Secret Key"
-  type        = string
-  default     = ""
-}
-
-
-variable "session_token" {
-  description = "AWS Session Token"
-  type        = string
-  default     = ""
-}
-
 variable "availability_zones" {
   type        = list(string)
   default     = ["us-east-1a", "us-east-1b"]
