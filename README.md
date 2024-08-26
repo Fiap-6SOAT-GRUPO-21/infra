@@ -12,6 +12,15 @@ As seguintes tarefas são realizadas por esse código Terradorm:
 * Através do módulo rds: Provisionamento da instância de database RDS postgres que será usado pela aplicação
 * Através do módulo eks: Provisionamento do cluster EKS
 
+## Fazendo Deployment via ACTION
+
+O action 'terraform apply' pode ser usado para realizar o deployment da infraestrutura, cluster EKS.  Será necessário fornecer as credenciais da nuvem AWS ao executar os script, atarvés do seguinte procedimento:
+
+1. Inicialize o laboratório no AWS Academy
+2. Copie as credenciais disponíveis em AWS Details (ver AWS CLI em CLoud Access)
+3. Atualize as secrets do repositório com as credenciais obtidas no passo anterior
+### Lembre-se de executar a pipe 'terraform destroy' ao final dos testes
+
 ## Testando na máquina local
 
 1. Inicialize o laboratório no AWS Academy
@@ -20,4 +29,4 @@ As seguintes tarefas são realizadas por esse código Terradorm:
 5. Execute 'terraform apply' para realizar as tarefas descritas acima
 6. Execute o seguinte comando para configurar as credenciais do cluster EKS na sua máquina e poder executar comandos com kubectl:
    aws eks --region us-east-1 update-kubeconfig --name techchallenge
-7. Lembre-se de executar 'terraform destroy' ao final dos testes
+### Lembre-se de executar 'terraform destroy' ao final dos testes
