@@ -53,17 +53,32 @@ module "eks_cluster" {
   depends_on = [module.vpc_for_eks]
 }
 
-resource "aws_secretsmanager_secret" "rds_db_credentials" {
-  name = "RDS_DB_CREDENTIALS"
+resource "aws_ssm_parameter" "rds_db_url" {
+  name  = "/techchallenge/rds/db_url"
+  type  = "String"
+  value = module.rds.rds_endpoint
 }
 
-resource "aws_secretsmanager_secret_version" "rds_db_credentials_version" {
-  secret_id = aws_secretsmanager_secret.rds_db_credentials.id
-  secret_string = jsonencode({
-    url      = module.rds.rds_endpoint
-    username = var.database_credentials.username
-    password = var.database_credentials.password
-    port     = var.database_credentials.port
-    db_name  = var.database_credentials.name
-  })
+resource "aws_ssm_parameter" "rds_db_username" {
+  name  = "/techchallenge/rds/db_username"
+  type  = "String"
+  value = var.database_credentials.username
+}
+
+resource "aws_ssm_parameter" "rds_db_password" {
+  name  = "/techchallenge/rds/db_password"
+  type  = "SecureString"
+  value = var.database_credentials.password
+}
+
+resource "aws_ssm_parameter" "rds_db_port" {
+  name  = "/techchallenge/rds/db_port"
+  type  = "String"
+  value = var.database_credentials.port
+}
+
+resource "aws_ssm_parameter" "rds_db_name" {
+  name  = "/techchallenge/rds/db_name"
+  type  = "String"
+  value = var.database_credentials.name
 }
