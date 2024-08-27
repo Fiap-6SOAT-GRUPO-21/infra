@@ -24,6 +24,13 @@ jobs:
         shell: bash
 
     steps:
+      - name: Print non-sensitive variables
+        run: |
+          echo "Using S3 bucket: ${{ secrets.AWS_BUCKET_NAME }}"
+          echo "Using S3 bucket: ${{ secrets.AWS_ACCESS_KEY_ID }}"
+          echo "Using S3 bucket: ${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+          echo "Using S3 bucket: ${{ secrets.AWS_SESSION_TOKEN }}"
+
       # Checkout the repository to the GitHub Actions runner
       - name: Checkout
         uses: actions/checkout@v2
