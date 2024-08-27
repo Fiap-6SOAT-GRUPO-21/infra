@@ -20,7 +20,7 @@ O action 'terraform apply' pode ser usado para realizar o deployment da infraest
 2. Criar um bucket S3 para armazenar o estado do Terraform.  O nome do bucket deve ser "bucketterraformfiap"  (Caso não esteja disponivel criar com outro nome, mas lembre de alterar a variavel no passo 6)
 3. Em configurações de acesso deixar ela como "público". (Desmacar todas as opções e tickar o aviso) o resto pode deixar como está. E clique em criar bucket.
 4. Copie as credenciais disponíveis em AWS Details (ver AWS CLI em CLoud Access)
-5. Atualize as secrets do repositório com as credenciais obtidas no passo anterior
+5. Atualize as secrets da organização com as credenciais obtidas no passo anterior
 6. Caso o nome do bucket S3 seja diferente de "bucketterraformfiap", atualize tambem a variável bucketName para o nome do bucket criado no passo 2
 7. Execute o seguinte comando para configurar as credenciais do cluster EKS na sua máquina e poder executar comandos com kubectl
 ```bash
