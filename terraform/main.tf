@@ -58,12 +58,12 @@ resource "aws_secretsmanager_secret" "rds_db_credentials" {
 }
 
 resource "aws_secretsmanager_secret_version" "rds_db_credentials_version" {
-  secret_id     = aws_secretsmanager_secret.rds_db_credentials.id
+  secret_id = aws_secretsmanager_secret.rds_db_credentials.id
   secret_string = jsonencode({
     url      = module.rds.rds_endpoint
     username = var.database_credentials.username
     password = var.database_credentials.password
-    port = var.database_credentials.port
-    db_name = var.database_credentials.name
+    port     = var.database_credentials.port
+    db_name  = var.database_credentials.name
   })
 }
