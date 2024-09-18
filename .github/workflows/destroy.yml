@@ -52,7 +52,7 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       - name: "Terraform Init - RDS"
-        run: terraform init -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" -backend-config="key=rds/estado/terraform.tfstate" -backend-config="region=us-east-1"
+        run: terraform init -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" -backend-config="key=estado/rds/terraformRDS.tfstate" -backend-config="region=us-east-1"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -66,7 +66,7 @@ jobs:
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
       - name: "Terraform Init - Infrastructure"
-        run: terraform init -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" -backend-config="key=infra/estado/terraform.tfstate" -backend-config="region=us-east-1"
+        run: terraform init -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" -backend-config="key=estado/terraformInfra.tfstate" -backend-config="region=us-east-1"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
