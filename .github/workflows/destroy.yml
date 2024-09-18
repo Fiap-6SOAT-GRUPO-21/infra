@@ -8,30 +8,58 @@ jobs:
     name: "Terraform Destroy"
     runs-on: ubuntu-latest
 
-    # Use the Bash shell and set the working directory
-    defaults:
-      run:
-        working-directory: terraform
-        shell: bash
-
     steps:
       # Checkout the repository to the GitHub Actions runner
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Install the latest version of Terraform CLI
+      # Set up kubectl (v4 is the latest version)
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'latest'
+
+      # Configure AWS credentials to access the EKS cluster
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
+
+      # Update kubeconfig to interact with the EKS cluster
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name techchallenge --region us-east-1
+
+      # Clean up Kubernetes resources (this step should happen before terraform destroy)
+      - name: Destroy Kubernetes Resources
+        run: |
+          kubectl delete deployments --all -n default
+          kubectl delete replicasets --all -n default
+          kubectl delete statefulsets --all -n default
+          kubectl delete services --all -n default
+          kubectl delete pods --all -n default
+          kubectl delete pvc --all -n default
+          kubectl delete hpa --all -n default
+          kubectl delete pv --all
+          kubectl delete role --all
+          kubectl delete rolebinding --all
+          kubectl delete configmap --all
+
+      # Setup Terraform to install the CLI and set the working directory
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
-      # Initialize a new or existing Terraform working directory
+      # Initialize Terraform with backend configuration
       - name: Terraform Init
-        run: terraform init -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" -backend-config="key=estado/terraform.tfstate" -backend-config="region=us-east-1"
+        run: terraform init -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" -backend-config="key=${{ github.repository }}/rds/terraform.tfstate" -backend-config="region=us-east-1"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
-      # Destroy Terraform-managed infrastructure
+      # Run Terraform Destroy to destroy all infrastructure
       - name: Terraform Destroy
         run: terraform destroy -auto-approve
         env:
