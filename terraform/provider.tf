@@ -11,6 +11,9 @@ terraform {
   }
 
   backend "s3" {
+    bucket = "bucketterraformfiap"
+    key    = "infra/terraform/terraform.tfstate"
+    region = "us-east-1"
   }
 
 }

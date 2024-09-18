@@ -21,21 +21,3 @@ variable "project_name" {
   type    = string
   default = "techchallenge"
 }
-
-variable "database_credentials" {
-  description = "Credentials for database creation"
-
-  type = object({
-    username = string
-    password = string
-    port     = string
-    name     = string
-  })
-
-  default = {
-    username = "postgres"
-    password = "postgres"
-    port     = 5432
-    name     = "apifood"
-  }
-}
