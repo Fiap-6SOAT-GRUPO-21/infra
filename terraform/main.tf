@@ -49,3 +49,9 @@ resource "aws_ssm_parameter" "eks_public_subnet_ids" {
   type  = "String"
   value = join(",", module.vpc_for_eks.public_subnet_ids)
 }
+
+resource "aws_ssm_parameter" "eks_private_subnet_ids" {
+  name  = "/techchallenge/eks/private_subnet_ids"
+  type  = "String"
+  value = join(",", module.vpc_for_eks.private_subnet_ids)
+}
