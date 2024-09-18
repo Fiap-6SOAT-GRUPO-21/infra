@@ -11,6 +11,8 @@ As seguintes tarefas são realizadas por esse código Terradorm:
 * Através do módulo vpc: Provisionamento da infra da rede (VPC, subnet, Internet Gateway, route table e NAT)
 * Através do módulo eks: Provisionamento do cluster EKS
 
+Pipeline de destroy também foi criada para destruir TODA a infraestrutura criada, incluindo dos outros terrafoms criados como RDS e EKS.
+
 ## Fazendo Deployment via ACTION
 
 O action 'terraform apply' pode ser usado para realizar o deployment da infraestrutura, cluster EKS.  Será necessário fornecer as credenciais da nuvem AWS ao executar os script, atarvés do seguinte procedimento:

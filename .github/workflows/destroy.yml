@@ -1,26 +1,20 @@
-name: "Terraform Destroy"
+name: "Terraform Destroy All"
 
 on:
   workflow_dispatch:
 
 jobs:
   terraform-destroy:
-    name: "Terraform Destroy"
+    name: "Destroy Infra and RDS"
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository to the GitHub Actions runner
-      - name: Checkout code
+      - name: "Checkout Code"
         uses: actions/checkout@v3
-
-      # Set up kubectl (v4 is the latest version)
-      - name: Set up kubectl
-        uses: azure/setup-kubectl@v4
         with:
-          version: 'latest'
+          fetch-depth: 1
 
-      # Configure AWS credentials to access the EKS cluster
-      - name: Configure AWS credentials
+      - name: "Configure AWS Credentials"
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -28,13 +22,9 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
 
-      # Update kubeconfig to interact with the EKS cluster
-      - name: Update kubeconfig
-        run: aws eks update-kubeconfig --name techchallenge --region us-east-1
-
-      # Clean up Kubernetes resources (this step should happen before terraform destroy)
-      - name: Destroy Kubernetes Resources
+      - name: "Destroy Kubernetes Resources"
         run: |
+          echo "Step 1: Destroying Kubernetes Resources"
           kubectl delete deployments --all -n default
           kubectl delete replicasets --all -n default
           kubectl delete statefulsets --all -n default
@@ -46,22 +36,53 @@ jobs:
           kubectl delete role --all
           kubectl delete rolebinding --all
           kubectl delete configmap --all
-
-      # Setup Terraform to install the CLI and set the working directory
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v1
-
-      # Initialize Terraform with backend configuration
-      - name: Terraform Init
-        run: terraform init -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" -backend-config="key=infra/estado/terraform.tfstate" -backend-config="region=us-east-1"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
-      # Run Terraform Destroy to destroy all infrastructure
-      - name: Terraform Destroy
-        run: terraform destroy -auto-approve
+      - name: "Setup Terraform"
+        uses: hashicorp/setup-terraform@v1
+
+      - name: "Terraform Init - RDS"
+        run: |
+          echo "Step 4: Initializing Terraform for RDS"
+          terraform init -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" \
+          -backend-config="key=rds/estado/terraform.tfstate" \
+          -backend-config="region=us-east-1"
+        working-directory: rds/
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: "Terraform Destroy - RDS"
+        run: |
+          echo "Step 5: Destroying RDS"
+          terraform destroy -auto-approve
+        working-directory: rds/
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: "Terraform Init - Infrastructure"
+        run: |
+          echo "Step 2: Initializing Terraform for Infra"
+          terraform init -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" \
+          -backend-config="key=infra/estado/terraform.tfstate" \
+          -backend-config="region=us-east-1"
+        working-directory: infra/
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: "Terraform Destroy - Infrastructure"
+        run: |
+          echo "Step 3: Destroying Infrastructure"
+          terraform destroy -auto-approve
+        working-directory: infra/
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
