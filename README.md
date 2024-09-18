@@ -1,15 +1,14 @@
-# Infra (VPC - EKS - RDS)
+# Infra (VPC - EKS)
 
 ## Descrição
 
-Esse repositório contém os códigos Terraform para deployment da infraestrutura na AWS utilizada na fase5 do techchallenge, bem como provionamento de pods kubernetes da aplicação.
+Esse repositório contém os códigos Terraform para deployment da infraestrutura na AWS utilizada na fase do techchallenge, bem como provionamento de pods kubernetes da aplicação.
 
 Todo provisionamento foi feito asssumindo-se que AWS Academy está sendo utilizado.  AWS Academy não permite a criação de IAM roles ou qualquer outro recurso relacioado a AWS IAM. Sendo assim, em todos os módulos é utilizado o role LabRole pre-existente na AWS Academy.
 
 As seguintes tarefas são realizadas por esse código Terradorm:
 
 * Através do módulo vpc: Provisionamento da infra da rede (VPC, subnet, Internet Gateway, route table e NAT)
-* Através do módulo rds: Provisionamento da instância de database RDS postgres que será usado pela aplicação, apontando para a subnet prublica para permitir acesso externo (Apenas para fins de teste)
 * Através do módulo eks: Provisionamento do cluster EKS
 
 ## Fazendo Deployment via ACTION
@@ -44,16 +43,3 @@ aws eks --region us-east-1 update-kubeconfig --name techchallenge
 ```
 
 ### Lembre-se de executar 'terraform destroy' ao final dos testes
-
-## Obtendo ip do banco de dados RDS
-
-1. No AWS Academy va em  "RDS"
-2. Clique em "Databases"
-3. Clique no banco de dados criado
-4. Copie o endpoint do banco de dados
-5. Acesse o banco através de qualquer ferramenta de acesso a banco de dados
-
-ou via comando aws cli, mas antes rode o comando do passo 6 do tópico anterior:
-```bash
-aws rds describe-db-instances --query "DBInstances[*].Endpoint.Address" --output text
-```

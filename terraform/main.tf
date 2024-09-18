@@ -8,21 +8,6 @@ module "vpc_for_eks" {
   vpc_cidr_block     = var.vpc_cidr_block
 }
 
-# RDS
-module "rds" {
-  source             = "./modules/rds"
-  region             = var.region
-  availability_zone  = var.availability_zones[0]
-  vpc_id             = module.vpc_for_eks.vpc_id
-  database_subnetids = module.vpc_for_eks.public_subnet_ids
-  database_username  = var.database_credentials.username
-  database_password  = var.database_credentials.password
-  database_port      = var.database_credentials.port
-  database_name      = var.database_credentials.name
-
-  depends_on = [module.vpc_for_eks]
-}
-
 # EKS Cluster
 module "eks_cluster" {
   source = "./modules/eks"
@@ -53,32 +38,14 @@ module "eks_cluster" {
   depends_on = [module.vpc_for_eks]
 }
 
-resource "aws_ssm_parameter" "rds_db_url" {
-  name  = "/techchallenge/rds/db_url"
+resource "aws_ssm_parameter" "eks_vpc_id" {
+  name  = "/techchallenge/eks/vpc_id"
   type  = "String"
-  value = module.rds.rds_endpoint
+  value = module.vpc_for_eks.vpc_id
 }
 
-resource "aws_ssm_parameter" "rds_db_username" {
-  name  = "/techchallenge/rds/db_username"
+resource "aws_ssm_parameter" "eks_public_subnet_ids" {
+  name  = "/techchallenge/eks/public_subnet_ids"
   type  = "String"
-  value = var.database_credentials.username
-}
-
-resource "aws_ssm_parameter" "rds_db_password" {
-  name  = "/techchallenge/rds/db_password"
-  type  = "SecureString"
-  value = var.database_credentials.password
-}
-
-resource "aws_ssm_parameter" "rds_db_port" {
-  name  = "/techchallenge/rds/db_port"
-  type  = "String"
-  value = var.database_credentials.port
-}
-
-resource "aws_ssm_parameter" "rds_db_name" {
-  name  = "/techchallenge/rds/db_name"
-  type  = "String"
-  value = var.database_credentials.name
+  value = join(",", module.vpc_for_eks.public_subnet_ids)
 }
