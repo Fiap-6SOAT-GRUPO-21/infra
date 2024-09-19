@@ -51,14 +51,14 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       # Initialize Terraform with reconfigure flag for API GATEWAY
-      - name: Terraform Init RDS
+      - name: Terraform Init API GATEWAY
         run: terraform init -reconfigure -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" -backend-config="key=estado/terraformAPIGATEWAY.tfstate" -backend-config="region=us-east-1"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
-      - name: Terraform Destroy RDS
+      - name: Terraform Destroy API GATEWAY
         run: terraform destroy -auto-approve
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
