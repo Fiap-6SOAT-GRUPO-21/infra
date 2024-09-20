@@ -48,8 +48,27 @@ jobs:
           kubectl delete rolebinding --all
           kubectl delete configmap --all
 
+      - name: Delete Lambda function
+        run: |
+          aws lambda delete-function --function-name techchallenge-authorizer-lambda
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
+
+      # Initialize Terraform with reconfigure flag for COGNITO
+      - name: Terraform Init API GATEWAY
+        run: terraform init -reconfigure -backend-config="bucket=${{ secrets.AWS_BUCKET_NAME }}" -backend-config="key=estado/terraformCOGNITO.tfstate" -backend-config="region=us-east-1"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: Terraform Destroy COGNITO
+        run: terraform destroy -auto-approve
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
 
       # Initialize Terraform with reconfigure flag for API GATEWAY
       - name: Terraform Init API GATEWAY
