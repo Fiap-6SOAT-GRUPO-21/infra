@@ -48,9 +48,14 @@ jobs:
           kubectl delete rolebinding --all
           kubectl delete configmap --all
 
-      - name: Delete Lambda function
+      - name: Delete Lambda function if exists
         run: |
-          aws lambda delete-function --function-name techchallenge-authorizer-lambda
+          if aws lambda get-function --function-name techchallenge-authorizer-lambda 2>/dev/null; then
+            echo "Lambda function exists, deleting..."
+            aws lambda delete-function --function-name techchallenge-authorizer-lambda
+          else
+            echo "Lambda function does not exist, skipping delete."
+          fi
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
