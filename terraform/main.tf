@@ -21,8 +21,8 @@ module "eks_cluster" {
 
   # Node group configuration (including autoscaling configurations)
   ami_type                = "AL2_x86_64"
-  disk_size               = 10
-  instance_types          = ["t2.small"]
+  disk_size               = 30
+  instance_types          = ["t3.medium"]
   pvt_desired_size        = 1
   pvt_max_size            = 8
   pvt_min_size            = 1
